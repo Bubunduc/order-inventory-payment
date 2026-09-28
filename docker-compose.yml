@@ -1,0 +1,105 @@
+x-common-env: &common-env
+  DB_NAME: ${DB_NAME}
+  DB_USERNAME: ${DB_USERNAME}
+  DB_PASSWORD: ${DB_PASSWORD}
+  DB_HOST: ${DB_HOST}
+  # Настройки RabbitMQ для Spring Boot
+  SPRING_RABBITMQ_HOST: saga-rabbitmq
+  SPRING_RABBITMQ_PORT: RABBITMQ_AMQP_PORT
+  SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
+  SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+
+services:
+
+  postgres:
+    image: postgres:17
+    container_name: saga-postgres
+
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./inventory-service/src/main/resources/sql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./order-service/src/main/resources/sql/init.sql:/docker-entrypoint-initdb.d/02-init.sql:ro
+      - ./payment-service/src/main/resources/sql/init.sql:/docker-entrypoint-initdb.d/03-init.sql:ro
+      
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U ${DB_USERNAME} -d ${DB_NAME}
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management 
+    container_name: saga-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "${RABBITMQ_MGMT_PORT}:15672" 
+      - "${RABBITMQ_AMQP_PORT}:5672"   
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+ 
+  order:
+    build:
+      context: ./order-service
+
+    image: bubunduc/order:latest
+    
+    container_name: order
+    environment:
+      <<: *common-env
+      SCHEMA_NAME: ${ORDER_SCHEMA}
+
+    ports:
+      - "${ORDER_PORT}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+  inventory:
+    build:
+      context: ./inventory-service
+
+    image: bubunduc/inventory:latest
+    container_name: inventory
+    environment:
+      <<: *common-env
+      SCHEMA_NAME: ${INVENTORY_SCHEMA}
+    ports:
+      - "${INVENTORY_PORT}:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+  payment:
+    build:
+      context: ./payment-service
+
+    image: bubunduc/payment:latest
+
+    container_name: payment
+    environment: 
+      <<: *common-env
+      SCHEMA_NAME: ${PAYMENT_SCHEMA}
+    ports:
+      - "${PAYMENT_PORT}:8082"
+    depends_on:
+      postgres:
+        condition: service_healthy
+volumes:
+  postgres-data:
+  rabbitmq-data:
