@@ -5,40 +5,19 @@ CREATE TABLE orders (
     amount NUMERIC(12, 2) NOT NULL,
     status VARCHAR(30) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT orders_status_check CHECK (
-        status IN (
-            'CREATED',
-            'AWAITING_INVENTORY',
-            'AWAITING_PAYMENT',
-            'CONFIRMED',
-            'CANCELLED'
-        )
-    )
-);
-
-CREATE TABLE items (
-    id BIGSERIAL PRIMARY KEY,
-    sku VARCHAR(100) NOT NULL UNIQUE
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE order_items (
     order_id BIGINT NOT NULL,
-    item_id BIGINT NOT NULL,
+    sku VARCHAR(100) NOT NULL,
     qty INTEGER NOT NULL,
 
-    PRIMARY KEY (order_id, item_id),
+    PRIMARY KEY (order_id, sku),
 
-    CONSTRAINT fk_order_items_order
-        FOREIGN KEY (order_id)
+    FOREIGN KEY (order_id)
         REFERENCES orders(id)
         ON DELETE CASCADE,
 
-    CONSTRAINT fk_order_items_item
-        FOREIGN KEY (item_id)
-        REFERENCES items(id),
-
-    CONSTRAINT order_items_qty_check
-        CHECK (qty > 0)
+    CHECK (qty > 0)
 );

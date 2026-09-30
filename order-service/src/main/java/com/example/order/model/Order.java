@@ -2,6 +2,7 @@ package com.example.order.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.example.order.enums.OrderStatus;
 
@@ -18,6 +19,7 @@ public class Order {
 	private Long id;
 	private BigDecimal amount;
 	private OrderStatus status;
+	private List<OrderItem> items;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 }

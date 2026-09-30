@@ -4,6 +4,21 @@
 
 <mapper namespace="com.example.order.mapper.OrderItemMapper">
 
-    <!-- Добавьте сюда ваши SQL-запросы -->
+	<insert id="insertAll">
+
+		INSERT INTO order_items (
+		order_id,
+		sku,
+		qty
+		)
+		VALUES
+		<foreach collection="items" item="item" separator=",">
+			(
+			#{orderId},
+			#{item.sku},
+			#{item.qty}
+			)
+		</foreach>
+	</insert>
 
 </mapper>

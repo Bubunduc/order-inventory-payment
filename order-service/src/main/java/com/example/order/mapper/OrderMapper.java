@@ -9,5 +9,7 @@ import com.example.order.model.Order;
 public interface OrderMapper {
 	void insert(Order order);
 
-	void update(@Param("id") Long id, @Param("status") OrderStatus status);
+	void updateStatus(@Param("id") Long id, @Param("status") OrderStatus status);
+	
+	Order findById(Long id);
 }

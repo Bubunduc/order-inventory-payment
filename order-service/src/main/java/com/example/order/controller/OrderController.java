@@ -14,22 +14,22 @@ import com.example.order.service.OrderService;
 
 import lombok.RequiredArgsConstructor;
 
-
 @RestController
 @RequestMapping("/orders")
 @RequiredArgsConstructor
 public class OrderController {
-	
+
 	private final OrderService orderService;
-	
+
 	@PostMapping
 	public ResponseEntity<Void> createOrder(@RequestBody CreateOrderRequest request) {
 		orderService.createOrder(request);
 		return ResponseEntity.ok().build();
 	}
-	
+
 	@GetMapping("/{id}")
-	public GetOrderRequest getOrder(@PathVariable Long id){
-		return orderService.getOrderById(id) ;
+	public ResponseEntity<GetOrderRequest> getOrder(@PathVariable Long id) {
+		GetOrderRequest response = orderService.getOrderById(id);
+		return ResponseEntity.ok(response);
 	}
 }
