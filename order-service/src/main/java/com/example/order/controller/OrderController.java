@@ -1,6 +1,5 @@
 package com.example.order.controller;
 
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,16 +12,15 @@ import com.example.order.dto.CreateOrderRequest;
 import com.example.order.dto.GetOrderRequest;
 import com.example.order.service.OrderService;
 
+import lombok.RequiredArgsConstructor;
+
 
 @RestController
 @RequestMapping("/orders")
+@RequiredArgsConstructor
 public class OrderController {
 	
 	private final OrderService orderService;
-	
-	public OrderController(RabbitTemplate rabbitTemplate,OrderService orderService) {
-		this.orderService = orderService;
-	}
 	
 	@PostMapping
 	public ResponseEntity<Void> createOrder(@RequestBody CreateOrderRequest request) {

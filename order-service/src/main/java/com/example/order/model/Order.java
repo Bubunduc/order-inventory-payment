@@ -15,9 +15,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order {
-    private Long id;
-    private BigDecimal totalAmount;
-    private OrderStatus status;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+	private Long id;
+	private BigDecimal amount;
+	private OrderStatus status;
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
 }
