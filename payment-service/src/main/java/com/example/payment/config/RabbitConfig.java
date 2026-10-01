@@ -16,13 +16,13 @@ public class RabbitConfig {
 	}
 
 	@Bean
-	public Queue inventoryQueue() {
+	public Queue paymentQueue() {
 		return new Queue("payment.queue", true);
 	}
 
 	@Bean
-	public Binding inventoryReservedBinding(Queue inventoryQueue, TopicExchange sagaExchange) {
-		return BindingBuilder.bind(inventoryQueue).to(sagaExchange).with("inventory.reserved");
+	public Binding inventoryReservedBinding(Queue paymentQueue, TopicExchange sagaExchange) {
+		return BindingBuilder.bind(paymentQueue).to(sagaExchange).with("inventory.reserved");
 	}
 
 }

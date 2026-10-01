@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.order.dto.CreateOrderRequest;
-import com.example.order.dto.GetOrderRequest;
+import com.example.order.dto.GetOrderResponse;
 import com.example.order.dto.OrderItemRequest;
 import com.example.order.enums.OrderStatus;
 import com.example.order.exception.OrderNotFoundException;
@@ -34,17 +34,16 @@ public class OrderServiceImpl implements OrderService {
 		Long orderId = newOrder.getId();
 		orderItemMapper.insertAll(orderId, OrderItemRequest.toEntityList(request.items()));
 		messageSender.sendMessage(orderId, request);
-
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public GetOrderRequest getOrderById(Long id) {
+	public GetOrderResponse getOrderById(Long id) {
 		Order order = orderMapper.findById(id);
-		if(order == null) {
+		if (order == null) {
 			throw new OrderNotFoundException(id);
 		}
-		return GetOrderRequest.fromEntity(order);
+		return GetOrderResponse.fromEntity(order);
 	}
 
 }

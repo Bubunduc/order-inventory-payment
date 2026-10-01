@@ -1,11 +1,11 @@
 package com.example.order.service;
 
 import com.example.order.dto.CreateOrderRequest;
-import com.example.order.dto.GetOrderRequest;
+import com.example.order.dto.GetOrderResponse;
 
 public interface OrderService {
 
 	void createOrder(CreateOrderRequest request);
 
-	GetOrderRequest getOrderById(Long id);
+	GetOrderResponse getOrderById(Long id);
 }

@@ -24,22 +24,22 @@ public class RabbitConfig {
 	}
 
 	@Bean
-	public Queue inventoryQueue() {
+	public Queue orderQueue() {
 		return new Queue("order.queue", true);
 	}
 
 	@Bean
-	public Binding paymentCompleteBinding(Queue inventoryQueue, TopicExchange sagaExchange) {
-		return BindingBuilder.bind(inventoryQueue).to(sagaExchange).with("payment.completed");
+	public Binding paymentCompleteBinding(Queue orderQueue, TopicExchange sagaExchange) {
+		return BindingBuilder.bind(orderQueue).to(sagaExchange).with("payment.completed");
 	}
 
 	@Bean
-	public Binding paymentFailBinding(Queue inventoryQueue, TopicExchange sagaExchange) {
-		return BindingBuilder.bind(inventoryQueue).to(sagaExchange).with("payment.failed");
+	public Binding paymentFailBinding(Queue orderQueue, TopicExchange sagaExchange) {
+		return BindingBuilder.bind(orderQueue).to(sagaExchange).with("payment.failed");
 	}
 
 	@Bean
-	public Binding inventoryRejectBinding(Queue inventoryQueue, TopicExchange sagaExchange) {
-		return BindingBuilder.bind(inventoryQueue).to(sagaExchange).with("inventory.rejected");
+	public Binding inventoryRejectBinding(Queue orderQueue, TopicExchange sagaExchange) {
+		return BindingBuilder.bind(orderQueue).to(sagaExchange).with("inventory.rejected");
 	}
 }

@@ -1,7 +1,6 @@
 package com.example.order.dto;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.example.order.model.OrderItem;
 
@@ -12,10 +11,11 @@ import jakarta.validation.constraints.Positive;
 public record OrderItemRequest(
 		@NotBlank
 		String sku,
-		
+
 		@NotNull
 		@Positive
-		Integer qty) {
+		Integer qty
+		) {
 
 	public OrderItem toEntity() {
 		return new OrderItem(this.sku, this.qty);
@@ -25,12 +25,13 @@ public record OrderItemRequest(
 		if (requests == null) {
 			return List.of();
 		}
-		return requests.stream().map(OrderItemRequest::toEntity).collect(Collectors.toList());
+		return requests.stream().map(OrderItemRequest::toEntity).toList();
 	}
+
 	public static OrderItemRequest fromEntity(OrderItem item) {
-        if (item == null) {
-            return null;
-        }
-        return new OrderItemRequest(item.getSku(), item.getQty());
-    }
+		if (item == null) {
+			return null;
+		}
+		return new OrderItemRequest(item.getSku(), item.getQty());
+	}
 }
