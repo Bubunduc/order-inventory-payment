@@ -37,4 +37,9 @@ public class GlobalExceptionHandler {
 
 		return ResponseEntity.badRequest().body(new ErrorMessageResponse("Некорректное тело запроса"));
 	}
+	
+	@ExceptionHandler(DuplicateSkuException.class)
+	public ResponseEntity<ErrorMessageResponse> handleDuplicateSku(DuplicateSkuException ex){
+		return ResponseEntity.badRequest().body(new ErrorMessageResponse(ex.getMessage()));
+	}
 }
