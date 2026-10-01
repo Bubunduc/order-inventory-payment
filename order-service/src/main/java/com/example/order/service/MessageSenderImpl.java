@@ -1,4 +1,4 @@
-package com.example.order.service;
+ package com.example.order.service;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;

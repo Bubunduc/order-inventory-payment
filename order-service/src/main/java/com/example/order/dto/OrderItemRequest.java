@@ -5,10 +5,20 @@ import java.util.stream.Collectors;
 
 import com.example.order.model.OrderItem;
 
-public record OrderItemRequest(String sku, int quantity) {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
+public record OrderItemRequest(
+		@NotBlank
+		String sku,
+		
+		@NotNull
+		@Positive
+		Integer qty) {
 
 	public OrderItem toEntity() {
-		return new OrderItem(this.sku, this.quantity);
+		return new OrderItem(this.sku, this.qty);
 	}
 
 	public static List<OrderItem> toEntityList(List<OrderItemRequest> requests) {

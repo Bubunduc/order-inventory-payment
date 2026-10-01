@@ -12,6 +12,7 @@ import com.example.order.dto.CreateOrderRequest;
 import com.example.order.dto.GetOrderRequest;
 import com.example.order.service.OrderService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -22,7 +23,7 @@ public class OrderController {
 	private final OrderService orderService;
 
 	@PostMapping
-	public ResponseEntity<Void> createOrder(@RequestBody CreateOrderRequest request) {
+	public ResponseEntity<Void> createOrder(@Valid @RequestBody CreateOrderRequest request) {
 		orderService.createOrder(request);
 		return ResponseEntity.ok().build();
 	}

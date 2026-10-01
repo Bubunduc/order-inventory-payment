@@ -1,6 +1,6 @@
 CREATE SCHEMA IF NOT EXISTS order_db;
 
-CREATE TABLE orders (
+CREATE TABLE order_db.orders (
     id BIGSERIAL PRIMARY KEY,
     amount NUMERIC(12, 2) NOT NULL,
     status VARCHAR(30) NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE orders (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE order_items (
+CREATE TABLE order_db.order_items (
     order_id BIGINT NOT NULL,
     sku VARCHAR(100) NOT NULL,
     qty INTEGER NOT NULL,

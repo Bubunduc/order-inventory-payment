@@ -7,6 +7,7 @@ import com.example.order.dto.CreateOrderRequest;
 import com.example.order.dto.GetOrderRequest;
 import com.example.order.dto.OrderItemRequest;
 import com.example.order.enums.OrderStatus;
+import com.example.order.exception.OrderNotFoundException;
 import com.example.order.mapper.OrderItemMapper;
 import com.example.order.mapper.OrderMapper;
 import com.example.order.model.Order;
@@ -26,9 +27,6 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	@Transactional
 	public void createOrder(CreateOrderRequest request) {
-		if (request == null) {
-			return;
-		}
 		Order newOrder = new Order();
 		newOrder.setAmount(request.amount());
 		newOrder.setStatus(OrderStatus.CREATED);
@@ -43,6 +41,9 @@ public class OrderServiceImpl implements OrderService {
 	@Transactional(readOnly = true)
 	public GetOrderRequest getOrderById(Long id) {
 		Order order = orderMapper.findById(id);
+		if(order == null) {
+			throw new OrderNotFoundException(id);
+		}
 		return GetOrderRequest.fromEntity(order);
 	}
 
