@@ -16,7 +16,7 @@ CREATE TABLE order_db.order_items (
     PRIMARY KEY (order_id, sku),
 
     FOREIGN KEY (order_id)
-        REFERENCES orders(id)
+        REFERENCES order_db.orders(id)
         ON DELETE CASCADE,
 
     CHECK (qty > 0)
