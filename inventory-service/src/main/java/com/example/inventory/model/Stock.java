@@ -11,7 +11,13 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Stock {
 	private String sku;
-	private Integer available_qty;
-	private Integer reserved_qty;
+	private Integer availableQty;
+	private Integer reservedQty;
+	@Override
+	public String toString() {
+		return "Stock [sku=" + sku + ", availableQty=" + availableQty + ", reservedQty=" + reservedQty + "]";
+	}
+	
+	
 }
 

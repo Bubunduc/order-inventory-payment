@@ -6,6 +6,6 @@ import java.util.List;
 public record OrderCreatedMessage(
 		Long orderId,
 		List<OrderCreatedMessageItem> items,
-		BigDecimal ammount) {
+		BigDecimal amount) {
 
 }
