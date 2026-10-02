@@ -30,11 +30,13 @@ public class InventoryServiceImpl implements InventoryService {
 	public void reserve(OrderCreatedMessage orderCreatedMessage) throws InventoryRejectException {
 		Long orderId = orderCreatedMessage.orderId();
 		String errMessage;
-		if (processedOrderMapper.findById(orderId) != null) {
-			errMessage = "Заказ с " + orderId + "уже существует в системе";
+		
+		if(processedOrderMapper.findById(orderId) != null) {
+			errMessage = "Заказ с " + orderId + " уже существует в системе";
 			sender.sendRejectMessage(orderId, errMessage);
 			throw new InventoryRejectException(errMessage);
 		}
+		
 		Map<String, Integer> skus = orderCreatedMessage.
 				items().
 				stream()
@@ -54,7 +56,7 @@ public class InventoryServiceImpl implements InventoryService {
 		if (!notFoundSkus.isEmpty()) {
 			errMessage = "Не найдены SKU: " + notFoundSkus;
 			sender.sendRejectMessage(orderId, errMessage);
-			return;
+			throw new InventoryRejectException(errMessage);
 		}
 
 		for (Map.Entry<String, Integer> item : skus.entrySet()) {

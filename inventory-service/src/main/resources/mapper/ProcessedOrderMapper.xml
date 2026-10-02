@@ -11,7 +11,7 @@
 	</resultMap>
 
 	<select id="findById" resultMap="processedOrderResultMap">
-		SELECT
+		SELECT order_id
 		FROM inventory_db.processed_orders
 		WHERE order_id = #{orderId}
 	</select>
