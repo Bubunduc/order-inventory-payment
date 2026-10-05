@@ -12,5 +12,7 @@ import com.example.inventory.model.Stock;
 public interface StockMapper {
 	List<Stock> findAllBySku(@Param("skus") Set<String> set);
 
-	void reserve(@Param("sku") String sku, @Param("qty") Integer qty);
+	int reserve(@Param("sku") String sku, @Param("qty") Integer qty);
+	
+	void release(@Param("sku") String sku, @Param("qty") Integer qty);
 }

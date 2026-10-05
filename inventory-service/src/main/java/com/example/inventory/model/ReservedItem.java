@@ -9,13 +9,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ProcessedOrder {
+public class ReservedItem {
 	private Long orderId;
+	private String sku;
+	private Integer qty;
 
 	@Override
 	public String toString() {
-		return "ProcessedOrder [orderId=" + orderId + "]";
+		return "ReservedItem [orderId=" + orderId + ", sku=" + sku + ", qty=" + qty + "]";
 	}
-	
-	
 }

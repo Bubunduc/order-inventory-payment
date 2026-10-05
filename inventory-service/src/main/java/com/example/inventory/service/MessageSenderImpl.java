@@ -4,7 +4,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import com.example.inventory.dto.InventoryRejectMessage;
-import com.example.inventory.dto.InventoryReleaseMessage;
+import com.example.inventory.dto.InventoryReserveMessage;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,7 +16,7 @@ public class MessageSenderImpl implements MessageSender {
 
 	@Override
 	public void sendReserveMessage(Long id) {
-		InventoryReleaseMessage message = new InventoryReleaseMessage(id);
+		InventoryReserveMessage message = new InventoryReserveMessage(id);
 		rabbitTemplate.convertAndSend("saga.exchange", "inventory.reserved", message);
 	}
 

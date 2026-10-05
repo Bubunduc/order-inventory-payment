@@ -1,6 +1,6 @@
 package com.example.inventory.exception;
 
-public class InventoryRejectException extends Exception {
+public class InventoryRejectException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 

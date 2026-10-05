@@ -1,5 +1,5 @@
 package com.example.inventory.dto;
 
-public record InventoryRejectMessage(Long id, String reason) {
+public record InventoryRejectMessage(Long orderId, String reason) {
 
 }

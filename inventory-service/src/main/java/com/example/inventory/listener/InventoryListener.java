@@ -25,24 +25,18 @@ public class InventoryListener {
 		String routingKey = message.getMessageProperties().getReceivedRoutingKey();
 
 		if ("order.created".equals(routingKey)) {
-			OrderCreatedMessage orderCreatedMessage = objectMapper.readValue(
-					message.getBody(),
-					OrderCreatedMessage.class
-					);
+			OrderCreatedMessage orderCreatedMessage = objectMapper.readValue(message.getBody(),
+					OrderCreatedMessage.class);
 			try {
-			inventoryService.reserve(orderCreatedMessage);
-			}
-			catch (InventoryRejectException e) {
+				inventoryService.reserve(orderCreatedMessage);
+			} catch (InventoryRejectException e) {
 				System.out.println(e.getMessage());
 			}
-		}
-		else if ("inventory.release".equals(routingKey)) {
-			InventoryReleaseMessage orderCreatedMessage = objectMapper.readValue(
-					message.getBody(),
-					InventoryReleaseMessage.class
-					);
+		} else if ("inventory.release".equals(routingKey)) {
+			InventoryReleaseMessage orderReleasedMessage = objectMapper.readValue(message.getBody(),
+					InventoryReleaseMessage.class);
 
-			inventoryService.release(orderCreatedMessage);
+			inventoryService.release(orderReleasedMessage);
 		}
 	}
 }

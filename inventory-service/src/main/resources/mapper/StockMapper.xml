@@ -17,20 +17,27 @@
 		available_qty,
 		reserved_qty
 		FROM inventory_db.stock
-		WHERE sku IN
+		WHERE sku
+		IN
 		<foreach collection="skus" item="sku" open="(" separator=","
 			close=")">
 			#{sku}
 		</foreach>
+		ORDER BY sku
 	</select>
 
 	<update id="reserve">
 		UPDATE inventory_db.stock
-		SET available_qty =
-		available_qty - #{qty},
+		SET available_qty = available_qty - #{qty},
 		reserved_qty = reserved_qty + #{qty}
-		WHERE sku =
-		#{sku}
+		WHERE sku = #{sku}
 		AND available_qty >= #{qty}
+	</update>
+	<update id="release">
+		UPDATE inventory_db.stock
+		SET available_qty = available_qty + #{qty},
+		reserved_qty = reserved_qty - #{qty}
+		WHERE sku = #{sku}
+		AND reserved_qty >= #{qty}
 	</update>
 </mapper>
