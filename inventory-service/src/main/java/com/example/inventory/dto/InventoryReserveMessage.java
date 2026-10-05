@@ -1,4 +1,4 @@
 package com.example.inventory.dto;
 
-public record InventoryReserveMessage(Long id) {
+public record InventoryReserveMessage(Long orderId) {
 }

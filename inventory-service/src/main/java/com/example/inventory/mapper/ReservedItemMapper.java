@@ -10,7 +10,7 @@ import com.example.inventory.model.ReservedItem;
 @Mapper
 public interface ReservedItemMapper {
 
-	List<ReservedItem> findAllById(@Param("orderId") Long orderId);
+	List<ReservedItem> findAllByOrderId(@Param("orderId") Long orderId);
 
 	void insert(@Param("orderId") Long orderId, @Param("sku") String sku, @Param("qty") Integer qty);
 	

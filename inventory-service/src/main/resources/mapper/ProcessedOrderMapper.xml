@@ -15,8 +15,9 @@
 		FROM inventory_db.processed_orders
 		WHERE order_id = #{orderId}
 	</select>
-	<insert id="insert">
+	<insert id="insertIfAbsent">
 		INSERT INTO inventory_db.processed_orders(order_id)
 		VALUES (#{orderId})
+		ON CONFLICT (order_id) DO NOTHING
 	</insert>
 </mapper>

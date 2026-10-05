@@ -6,7 +6,7 @@ import com.example.inventory.exception.InventoryRejectException;
 
 public interface InventoryService {
 
-	void reserve(OrderCreatedMessage orderCreatedMessage) throws InventoryRejectException;
+	boolean reserve(OrderCreatedMessage orderCreatedMessage) throws InventoryRejectException;
 
 	void release(InventoryReleaseMessage orderCreatedMessage);
 

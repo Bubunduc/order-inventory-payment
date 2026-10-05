@@ -14,5 +14,5 @@ public interface StockMapper {
 
 	int reserve(@Param("sku") String sku, @Param("qty") Integer qty);
 	
-	void release(@Param("sku") String sku, @Param("qty") Integer qty);
+	int release(@Param("sku") String sku, @Param("qty") Integer qty);
 }
