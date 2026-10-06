@@ -48,11 +48,10 @@ public class InventoryListener {
 		OrderCreatedMessage orderCreatedMessage = objectMapper.readValue(message.getBody(), OrderCreatedMessage.class);
 		try {
 			boolean reserved = inventoryService.reserve(orderCreatedMessage);
-
+			
 			if (!reserved) {
 				return;
 			}
-
 			sender.sendReserveMessage(orderCreatedMessage.orderId());
 
 		} catch (InventoryRejectException e) {
@@ -60,11 +59,11 @@ public class InventoryListener {
 			sender.sendRejectMessage(orderCreatedMessage.orderId(), e.getMessage());
 		} catch (DataAccessException e) {
 			log.error("Ошибка бд при обработке заказа {}", orderCreatedMessage.orderId(), e);
+			sender.sendRejectMessage(orderCreatedMessage.orderId(), e.getMessage());
 			throw e;
 		} catch (TransactionException e) {
-
 			log.error("Не удалось выполнить транзакцию для заказа {}", orderCreatedMessage.orderId(), e);
-
+			sender.sendRejectMessage(orderCreatedMessage.orderId(), e.getMessage());
 			throw e;
 		}
 	}
@@ -78,9 +77,7 @@ public class InventoryListener {
 			log.error("Ошибка бд при обработке заказа {}", releaseMessage.orderId(), e);
 			throw e;
 		} catch (TransactionException e) {
-
 			log.error("Не удалось выполнить транзакцию для заказа {}", releaseMessage.orderId(), e);
-
 			throw e;
 		}
 	}
