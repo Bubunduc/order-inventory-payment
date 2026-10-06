@@ -4,17 +4,6 @@
 
 <mapper
 	namespace="com.example.inventory.mapper.ProcessedOrderMapper">
-
-	<resultMap id="processedOrderResultMap"
-		type="com.example.inventory.model.ProcessedOrder">
-		<id property="orderId" column="order_id" />
-	</resultMap>
-
-	<select id="findById" resultMap="processedOrderResultMap">
-		SELECT order_id
-		FROM inventory_db.processed_orders
-		WHERE order_id = #{orderId}
-	</select>
 	<insert id="insertIfAbsent">
 		INSERT INTO inventory_db.processed_orders(order_id)
 		VALUES (#{orderId})

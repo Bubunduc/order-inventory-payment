@@ -26,7 +26,7 @@ public class InventoryListener {
 	private final ObjectMapper objectMapper;
 
 	@RabbitListener(queues = "inventory.queue")
-	public void listen(Message message) throws Exception {
+	public void listen(Message message) throws InventoryRejectException, DataAccessException, TransactionException {
 		String routingKey = message.getMessageProperties().getReceivedRoutingKey();
 
 		switch (routingKey) {
@@ -44,11 +44,11 @@ public class InventoryListener {
 		}
 	}
 
-	private void handleOrderCreated(Message message) throws Exception {
+	private void handleOrderCreated(Message message) throws InventoryRejectException, DataAccessException, TransactionException {
 		OrderCreatedMessage orderCreatedMessage = objectMapper.readValue(message.getBody(), OrderCreatedMessage.class);
 		try {
 			boolean reserved = inventoryService.reserve(orderCreatedMessage);
-			
+
 			if (!reserved) {
 				return;
 			}
@@ -59,16 +59,14 @@ public class InventoryListener {
 			sender.sendRejectMessage(orderCreatedMessage.orderId(), e.getMessage());
 		} catch (DataAccessException e) {
 			log.error("Ошибка бд при обработке заказа {}", orderCreatedMessage.orderId(), e);
-			sender.sendRejectMessage(orderCreatedMessage.orderId(), e.getMessage());
-			throw e;
+			sender.sendRejectMessage(orderCreatedMessage.orderId(), "Ошибка при работе с базой данных Inventory Service");
 		} catch (TransactionException e) {
 			log.error("Не удалось выполнить транзакцию для заказа {}", orderCreatedMessage.orderId(), e);
-			sender.sendRejectMessage(orderCreatedMessage.orderId(), e.getMessage());
-			throw e;
+			sender.sendRejectMessage(orderCreatedMessage.orderId(), "Ошибка при работе с базой данных Inventory Service");
 		}
 	}
 
-	private void handleInventoryRelease(Message message) throws Exception {
+	private void handleInventoryRelease(Message message) throws DataAccessException, TransactionException {
 		InventoryReleaseMessage releaseMessage = objectMapper.readValue(message.getBody(),
 				InventoryReleaseMessage.class);
 		try {
