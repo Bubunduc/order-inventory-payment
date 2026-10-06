@@ -29,9 +29,9 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(OrderNotFoundException.class)
-	public ResponseEntity<String> handleOrderNotFound(OrderNotFoundException ex) {
+	public ResponseEntity<ErrorMessageResponse> handleOrderNotFound(OrderNotFoundException ex) {
 		log.info("Заказ не найден: {}", ex.getMessage());
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageResponse(ex.getMessage()));
 	}
 
 	@ExceptionHandler(HttpMessageNotReadableException.class)
