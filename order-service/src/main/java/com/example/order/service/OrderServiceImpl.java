@@ -46,6 +46,7 @@ public class OrderServiceImpl implements OrderService {
 		Long orderId = newOrder.getId();
 		orderItemMapper.insertAll(orderId, OrderItemRequest.toEntityList(request.items()));
 		messageSender.sendMessage(orderId, request);
+		orderMapper.updateStatus(orderId, OrderStatus.AWAITING_INVENTORY);
 	}
 
 	@Override

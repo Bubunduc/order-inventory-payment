@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.inventory.mapper.StockMapper">
+
+	<resultMap id="stockResultMap"
+		type="com.example.inventory.model.Stock">
+		<id property="sku" column="sku" />
+		<result property="availableQty" column="available_qty" />
+		<result property="reservedQty" column="reserved_qty" />
+	</resultMap>
+
+	<select id="findAllBySku" resultMap="stockResultMap">
+		SELECT
+		sku,
+		available_qty,
+		reserved_qty
+		FROM inventory_db.stock
+		WHERE sku
+		IN
+		<foreach collection="skus" item="sku" open="(" separator=","
+			close=")">
+			#{sku}
+		</foreach>
+		ORDER BY sku
+	</select>
+
+	<update id="reserve">
+		UPDATE inventory_db.stock
+		SET available_qty = available_qty - #{qty},
+		reserved_qty = reserved_qty + #{qty}
+		WHERE sku = #{sku}
+		AND available_qty >= #{qty}
+	</update>
+	<update id="release">
+		UPDATE inventory_db.stock
+		SET available_qty = available_qty + #{qty},
+		reserved_qty = reserved_qty - #{qty}
+		WHERE sku = #{sku}
+		AND reserved_qty >= #{qty}
+	</update>
+</mapper>
