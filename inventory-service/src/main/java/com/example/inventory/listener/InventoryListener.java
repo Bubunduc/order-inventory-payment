@@ -26,7 +26,7 @@ public class InventoryListener {
 	private final ObjectMapper objectMapper;
 
 	@RabbitListener(queues = "inventory.queue")
-	public void listen(Message message) throws InventoryRejectException, DataAccessException, TransactionException {
+	public void listen(Message message) {
 		String routingKey = message.getMessageProperties().getReceivedRoutingKey();
 
 		switch (routingKey) {
@@ -44,7 +44,7 @@ public class InventoryListener {
 		}
 	}
 
-	private void handleOrderCreated(Message message) throws InventoryRejectException, DataAccessException, TransactionException {
+	private void handleOrderCreated(Message message) {
 		OrderCreatedMessage orderCreatedMessage = objectMapper.readValue(message.getBody(), OrderCreatedMessage.class);
 		try {
 			boolean reserved = inventoryService.reserve(orderCreatedMessage);
@@ -66,7 +66,7 @@ public class InventoryListener {
 		}
 	}
 
-	private void handleInventoryRelease(Message message) throws DataAccessException, TransactionException {
+	private void handleInventoryRelease(Message message) {
 		InventoryReleaseMessage releaseMessage = objectMapper.readValue(message.getBody(),
 				InventoryReleaseMessage.class);
 		try {
