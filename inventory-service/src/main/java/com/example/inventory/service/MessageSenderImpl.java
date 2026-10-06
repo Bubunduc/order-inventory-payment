@@ -1,5 +1,7 @@
 package com.example.inventory.service;
 
+import java.math.BigDecimal;
+
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +17,8 @@ public class MessageSenderImpl implements MessageSender {
 	private final RabbitTemplate rabbitTemplate;
 
 	@Override
-	public void sendReserveMessage(Long id) {
-		InventoryReserveMessage message = new InventoryReserveMessage(id);
+	public void sendReserveMessage(Long orderId,BigDecimal amount) {
+		InventoryReserveMessage message = new InventoryReserveMessage(orderId,amount);
 		rabbitTemplate.convertAndSend("saga.exchange", "inventory.reserved", message);
 	}
 

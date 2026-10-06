@@ -16,13 +16,12 @@
 	<insert id="insertIfAbsent">
 		INSERT INTO payment_db.payments(order_id,amount,status)
 		VALUES (#{orderId},#{amount},#{status})
+		ON CONFLICT (order_id) DO NOTHING
 	</insert>
 	<update id="updateStatus">
 
 		UPDATE payment_db.payments
 		SET status = #{status},
-		updated_at =
-		CURRENT_TIMESTAMP
 		WHERE id = #{id}
 
 	</update>

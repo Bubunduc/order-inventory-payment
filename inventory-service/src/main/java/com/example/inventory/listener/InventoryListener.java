@@ -52,7 +52,7 @@ public class InventoryListener {
 			if (!reserved) {
 				return;
 			}
-			sender.sendReserveMessage(orderCreatedMessage.orderId());
+			sender.sendReserveMessage(orderCreatedMessage.orderId(),orderCreatedMessage.amount());
 
 		} catch (InventoryRejectException e) {
 			log.warn("Заказ {} отклонён: {}", orderCreatedMessage.orderId(), e.getMessage());
