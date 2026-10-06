@@ -11,13 +11,12 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitConfig {
-	
 	@Bean
 	public MessageConverter jsonMessageConverter() {
 
 		return new JacksonJsonMessageConverter();
 	}
-	
+
 	@Bean
 	public TopicExchange sagaExchange() {
 		return new TopicExchange("saga.exchange");
