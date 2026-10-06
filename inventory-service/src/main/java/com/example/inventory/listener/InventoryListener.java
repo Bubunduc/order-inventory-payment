@@ -2,7 +2,9 @@ package com.example.inventory.listener;
 
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionException;
 
 import com.example.inventory.dto.InventoryReleaseMessage;
 import com.example.inventory.dto.OrderCreatedMessage;
@@ -43,8 +45,7 @@ public class InventoryListener {
 	}
 
 	private void handleOrderCreated(Message message) throws Exception {
-		OrderCreatedMessage orderCreatedMessage = objectMapper.
-				readValue(message.getBody(), OrderCreatedMessage.class);
+		OrderCreatedMessage orderCreatedMessage = objectMapper.readValue(message.getBody(), OrderCreatedMessage.class);
 		try {
 			boolean reserved = inventoryService.reserve(orderCreatedMessage);
 
@@ -57,13 +58,30 @@ public class InventoryListener {
 		} catch (InventoryRejectException e) {
 			log.warn("Заказ {} отклонён: {}", orderCreatedMessage.orderId(), e.getMessage());
 			sender.sendRejectMessage(orderCreatedMessage.orderId(), e.getMessage());
+		} catch (DataAccessException e) {
+			log.error("Ошибка бд при обработке заказа {}", orderCreatedMessage.orderId(), e);
+			throw e;
+		} catch (TransactionException e) {
+
+			log.error("Не удалось выполнить транзакцию для заказа {}", orderCreatedMessage.orderId(), e);
+
+			throw e;
 		}
 	}
 
 	private void handleInventoryRelease(Message message) throws Exception {
 		InventoryReleaseMessage releaseMessage = objectMapper.readValue(message.getBody(),
 				InventoryReleaseMessage.class);
-		
-		inventoryService.release(releaseMessage);
+		try {
+			inventoryService.release(releaseMessage);
+		} catch (DataAccessException e) {
+			log.error("Ошибка бд при обработке заказа {}", releaseMessage.orderId(), e);
+			throw e;
+		} catch (TransactionException e) {
+
+			log.error("Не удалось выполнить транзакцию для заказа {}", releaseMessage.orderId(), e);
+
+			throw e;
+		}
 	}
 }
