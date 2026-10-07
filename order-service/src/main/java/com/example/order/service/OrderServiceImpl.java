@@ -59,4 +59,12 @@ public class OrderServiceImpl implements OrderService {
 		return GetOrderResponse.fromEntity(order);
 	}
 
+	@Override
+	public void setAwaitingPaymentStatus(Long id) {
+		orderMapper.updateStatus(id, OrderStatus.AWAITING_PAYMENT);
+		
+	}
+	
+	
+
 }

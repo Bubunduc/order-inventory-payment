@@ -2,6 +2,7 @@ package com.example.order.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,5 +33,10 @@ public class OrderController {
 	public ResponseEntity<GetOrderResponse> getOrder(@PathVariable Long id) {
 		GetOrderResponse response = orderService.getOrderById(id);
 		return ResponseEntity.ok(response);
+	}
+	
+	@PatchMapping("/{orderId}/awaiting-payment")
+	public void awaiting(@PathVariable Long orderId) {
+		orderService.setAwaitingPaymentStatus(orderId);
 	}
 }

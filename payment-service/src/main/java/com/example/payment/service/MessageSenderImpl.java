@@ -10,10 +10,8 @@ import com.example.payment.dto.PaymentCompletedMessage;
 import com.example.payment.dto.PaymentFailedMessage;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import tools.jackson.databind.ObjectMapper;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class MessageSenderImpl implements MessageSender {
@@ -22,13 +20,13 @@ public class MessageSenderImpl implements MessageSender {
 	private final ObjectMapper objectMapper;
 	
 	private static final String EXCHANGE = "saga.exchange";
-	private static final String PAYMENT_COMPLITED = "payment.completed";
+	private static final String PAYMENT_COMPLETED = "payment.completed";
 	private static final String PAYMENT_FAILED = "payment.failed";
 	
 	@Override
 	public void sendPaymentCompletedMessage(Long orderId) {
 		PaymentCompletedMessage message = new PaymentCompletedMessage(orderId);
-		sendAsJson(EXCHANGE,PAYMENT_COMPLITED,message);
+		sendAsJson(EXCHANGE,PAYMENT_COMPLETED,message);
 		
 	}
 

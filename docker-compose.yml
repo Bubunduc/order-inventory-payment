@@ -80,6 +80,7 @@ services:
     image: bubunduc/inventory:latest
     container_name: inventory
     environment:
+      ORDER_SERVICE_URL : ${ORDER_SERVICE_URL}
       <<: *common-env
       SCHEMA_NAME: ${INVENTORY_SCHEMA}
     ports:
@@ -96,7 +97,7 @@ services:
     image: bubunduc/payment:latest
 
     container_name: payment
-    environment: 
+    environment:    
       <<: *common-env
       SCHEMA_NAME: ${PAYMENT_SCHEMA}
     ports:

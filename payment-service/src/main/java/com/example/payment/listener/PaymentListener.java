@@ -45,22 +45,22 @@ public class PaymentListener {
 	}
 
 	private void handleInventoryReserved(Message message) {
-		InventoryReserveMessage orderCreatedMessage = objectMapper.readValue(message.getBody(), InventoryReserveMessage.class);
+		InventoryReserveMessage inventoryReserveMessage = objectMapper.readValue(message.getBody(), InventoryReserveMessage.class);
 		try {
-			boolean paid = paymentService.pay(orderCreatedMessage);
+			boolean paid = paymentService.pay(inventoryReserveMessage);
 			
 			if (!paid) {
 			    return;
 			}
 			
-			messageSender.sendPaymentCompletedMessage(orderCreatedMessage.orderId());
+			messageSender.sendPaymentCompletedMessage(inventoryReserveMessage.orderId());
 		}catch (PaymentFailedException e) {
-			messageSender.sendPaymentFailedMessage(orderCreatedMessage.orderId(),e.getMessage());
+			messageSender.sendPaymentFailedMessage(inventoryReserveMessage.orderId(),e.getMessage());
 		}catch (DataAccessException e) {
-			log.error("Ошибка бд при обработке заказа {}", orderCreatedMessage.orderId(), e);
+			log.error("Ошибка бд при обработке заказа {}", inventoryReserveMessage.orderId(), e);
 			throw e;
 		} catch (TransactionException e) {
-			log.error("Не удалось выполнить транзакцию для заказа {}", orderCreatedMessage.orderId(), e);
+			log.error("Не удалось выполнить транзакцию для заказа {}", inventoryReserveMessage.orderId(), e);
 			throw e;
 		}
 	}
