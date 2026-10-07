@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.payment.dto.InventoryReserveMessage;
 import com.example.payment.dto.PaymentRefundMessage;
-import com.example.payment.emuns.PaymentStatus;
+import com.example.payment.enuns.PaymentStatus;
 import com.example.payment.exception.PaymentFailedException;
 import com.example.payment.mapper.PaymentMapper;
 
@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PaymentServiceImpl implements PaymentService{
 
 	private final PaymentMapper paymentMapper;
-	private final BigDecimal LIMIT = new BigDecimal("1000.0"); //Если выше, то зазказ не принят
+	private static final BigDecimal LIMIT = new BigDecimal("1000.0"); //Если выше, то зазказ не принят
 	
 	@Override
 	@Transactional

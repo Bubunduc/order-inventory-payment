@@ -18,8 +18,8 @@ public class MessageSenderImpl implements MessageSender {
 	private final RabbitTemplate rabbitTemplate;
 	private final ObjectMapper objectMapper;
 	
-	private final String EXCHANGE = "saga.exchange";
-	private final String ORDER_CREATED = "order.created";
+	private static final String EXCHANGE = "saga.exchange";
+	private static final String ORDER_CREATED = "order.created";
 
 	@Override
 	public void sendMessage(Long orderId, CreateOrderRequest request) {

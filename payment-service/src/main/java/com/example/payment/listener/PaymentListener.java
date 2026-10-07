@@ -47,8 +47,13 @@ public class PaymentListener {
 	private void handleInventoryReserved(Message message) {
 		InventoryReserveMessage orderCreatedMessage = objectMapper.readValue(message.getBody(), InventoryReserveMessage.class);
 		try {
-			paymentService.pay(orderCreatedMessage);
-			messageSender.sendPaymentComplitedMessage(orderCreatedMessage.orderId());
+			boolean paid = paymentService.pay(orderCreatedMessage);
+			
+			if (!paid) {
+			    return;
+			}
+			
+			messageSender.sendPaymentCompletedMessage(orderCreatedMessage.orderId());
 		}catch (PaymentFailedException e) {
 			messageSender.sendPaymentFailedMessage(orderCreatedMessage.orderId(),e.getMessage());
 		}catch (DataAccessException e) {

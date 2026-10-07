@@ -21,9 +21,9 @@ public class MessageSenderImpl implements MessageSender {
 	private final RabbitTemplate rabbitTemplate;
 	private final ObjectMapper objectMapper;
 
-	private final String EXCHANGE = "saga.exchange";
-	private final String RESERVE_MESSAGE = "inventory.reserved";
-	private final String REJECT_MESSAGE = "inventory.rejected";
+	private static final String EXCHANGE = "saga.exchange";
+	private static final String RESERVE_MESSAGE = "inventory.reserved";
+	private static final String REJECT_MESSAGE = "inventory.rejected";
 	
 	@Override
 	public void sendReserveMessage(Long orderId, BigDecimal amount) {

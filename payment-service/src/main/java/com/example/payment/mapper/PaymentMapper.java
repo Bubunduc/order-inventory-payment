@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.example.payment.emuns.PaymentStatus;
+import com.example.payment.enuns.PaymentStatus;
 
 @Mapper
 public interface PaymentMapper {
