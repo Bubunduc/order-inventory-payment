@@ -8,4 +8,6 @@ public interface OrderService {
 	void createOrder(CreateOrderRequest request);
 
 	GetOrderResponse getOrderById(Long id);
+	
+	void setAwaitingPaymentStatus(Long id);
 }

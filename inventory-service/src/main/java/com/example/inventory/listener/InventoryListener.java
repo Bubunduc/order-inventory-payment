@@ -6,6 +6,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionException;
 
+import com.example.inventory.client.OrderClient;
 import com.example.inventory.dto.InventoryReleaseMessage;
 import com.example.inventory.dto.OrderCreatedMessage;
 import com.example.inventory.exception.InventoryRejectException;
@@ -24,6 +25,7 @@ public class InventoryListener {
 	private final InventoryService inventoryService;
 	private final MessageSender sender;
 	private final ObjectMapper objectMapper;
+	private final OrderClient orderClient;
 
 	@RabbitListener(queues = "inventory.queue")
 	public void listen(Message message) {
@@ -52,7 +54,8 @@ public class InventoryListener {
 			if (!reserved) {
 				return;
 			}
-			sender.sendReserveMessage(orderCreatedMessage.orderId());
+			orderClient.awaitingPaymentRequest(orderCreatedMessage.orderId());
+			sender.sendReserveMessage(orderCreatedMessage.orderId(),orderCreatedMessage.amount());
 
 		} catch (InventoryRejectException e) {
 			log.warn("Заказ {} отклонён: {}", orderCreatedMessage.orderId(), e.getMessage());
