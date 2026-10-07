@@ -29,6 +29,14 @@
 
 	</update>
 
+	<update id="setAwaitingPaymentStatus">
+		UPDATE orders
+		SET status = 'AWAITING_PAYMENT',
+		updated_at = CURRENT_TIMESTAMP
+		WHERE id = #{id}
+		AND status = 'AWAITING_INVENTORY'
+	</update>
+
 	<resultMap id="OrderResultMap"
 		type="com.example.order.model.Order">
 
@@ -39,7 +47,8 @@
 		<result property="createdAt" column="created_at" />
 		<result property="updatedAt" column="updated_at" />
 
-		<collection property="items" ofType="com.example.order.model.OrderItem">
+		<collection property="items"
+			ofType="com.example.order.model.OrderItem">
 
 			<id property="sku" column="sku" />
 			<result property="qty" column="qty" />

@@ -11,5 +11,7 @@ public interface OrderMapper {
 
 	void updateStatus(@Param("id") Long id, @Param("status") OrderStatus status);
 	
-	Order findById(Long id);
+	Order findById(@Param("id") Long id);
+	
+	void setAwaitingPaymentStatus(@Param("id") Long id);
 }

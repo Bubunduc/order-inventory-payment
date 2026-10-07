@@ -61,7 +61,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public void setAwaitingPaymentStatus(Long id) {
-		orderMapper.updateStatus(id, OrderStatus.AWAITING_PAYMENT);
+		orderMapper.setAwaitingPaymentStatus(id);
 		
 	}
 	
