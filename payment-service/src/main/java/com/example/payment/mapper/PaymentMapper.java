@@ -10,10 +10,10 @@ import com.example.payment.emuns.PaymentStatus;
 @Mapper
 public interface PaymentMapper {
 	int insertIfAbsent(
-			@Param("order_id") Long orderId, 
+			@Param("orderId") Long orderId, 
 			@Param("amount") BigDecimal amount,
 			@Param("status") PaymentStatus status
 			);
 
-	int updateStatus(@Param("id") Long id, @Param("status") PaymentStatus status);
+	int updateStatus(@Param("orderId") Long orderId, @Param("status") PaymentStatus status);
 }

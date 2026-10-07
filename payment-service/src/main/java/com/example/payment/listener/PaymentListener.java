@@ -2,10 +2,14 @@ package com.example.payment.listener;
 
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionException;
 
 import com.example.payment.dto.InventoryReserveMessage;
+import com.example.payment.dto.PaymentRefundMessage;
 import com.example.payment.exception.PaymentFailedException;
+import com.example.payment.service.MessageSender;
 import com.example.payment.service.PaymentService;
 
 import lombok.RequiredArgsConstructor;
@@ -19,7 +23,8 @@ public class PaymentListener {
 	
 	private final ObjectMapper objectMapper;
 	private final PaymentService paymentService;
-
+	private final MessageSender messageSender;
+	
 	@RabbitListener(queues = "payment.queue")
 	public void listen(Message message) {
 		String routingKey = message.getMessageProperties().getReceivedRoutingKey();
@@ -43,12 +48,28 @@ public class PaymentListener {
 		InventoryReserveMessage orderCreatedMessage = objectMapper.readValue(message.getBody(), InventoryReserveMessage.class);
 		try {
 			paymentService.pay(orderCreatedMessage);
+			messageSender.sendPaymentComplitedMessage(orderCreatedMessage.orderId());
 		}catch (PaymentFailedException e) {
-			// TODO: handle exception
+			messageSender.sendPaymentFailedMessage(orderCreatedMessage.orderId(),e.getMessage());
+		}catch (DataAccessException e) {
+			log.error("Ошибка бд при обработке заказа {}", orderCreatedMessage.orderId(), e);
+			throw e;
+		} catch (TransactionException e) {
+			log.error("Не удалось выполнить транзакцию для заказа {}", orderCreatedMessage.orderId(), e);
+			throw e;
 		}
 	}
 
 	private void handlePaymentRefund(Message message) {
-	
+		PaymentRefundMessage refundMessage = objectMapper.readValue(message.getBody(), PaymentRefundMessage.class);
+		try {
+			paymentService.refund(refundMessage);
+		}catch (DataAccessException e) {
+			log.error("Ошибка бд при обработке заказа {}", refundMessage.orderId(), e);
+			throw e;
+		} catch (TransactionException e) {
+			log.error("Не удалось выполнить транзакцию для заказа {}", refundMessage.orderId(), e);
+			throw e;
+		}
 	}
 }

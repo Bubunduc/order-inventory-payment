@@ -2,27 +2,28 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper
-	namespace="com.example.inventory.mapper.ProcessedOrderMapper">
-	
+<mapper namespace="com.example.payment.mapper.PaymentMapper">
+
 	<resultMap id="PaymentResultMap"
-		type="com.example.inventory.model.Payment">
+		type="com.example.payment.model.Payment">
 		<id property="id" column="id" />
 		<result property="orderId" column="order_id" />
 		<result property="amount" column="amount" />
 		<result property="status" column="status" />
 	</resultMap>
-	
+
 	<insert id="insertIfAbsent">
-		INSERT INTO payment_db.payments(order_id,amount,status)
-		VALUES (#{orderId},#{amount},#{status})
-		ON CONFLICT (order_id) DO NOTHING
+		INSERT INTO payment_db.payments(order_id, amount,
+		status)
+		VALUES (#{orderId}, #{amount}, #{status})
+		ON CONFLICT (order_id)
+		DO NOTHING
 	</insert>
+
 	<update id="updateStatus">
-
 		UPDATE payment_db.payments
-		SET status = #{status},
-		WHERE id = #{id}
-
+		SET status = #{status}
+		WHERE order_id = #{orderId}
 	</update>
+
 </mapper>
