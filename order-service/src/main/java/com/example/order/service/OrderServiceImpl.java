@@ -34,10 +34,9 @@ public class OrderServiceImpl implements OrderService {
 	private final OrderItemMapper orderItemMapper;
 
 	@Override
-	@Transactional
 	public void createOrder(CreateOrderRequest request) {
 		OrderCreatedMessage message = insertOrder(request);
-		setAwaitingInventoryAndSend(message);
+		messageSender.sendCreateOrderMessage(message);
 		
 	}
 	@Transactional
@@ -61,17 +60,9 @@ public class OrderServiceImpl implements OrderService {
 				map(item -> new OrderCreatedMessageItem(item.sku(), item.qty())).toList();
 
 		OrderCreatedMessage message = new OrderCreatedMessage(orderId, messageItems, request.amount());
-		
+		orderMapper.setAwaitingInventory(message.orderId());
 		return message;
 		
-	}
-	
-	@Transactional
-	private void setAwaitingInventoryAndSend(OrderCreatedMessage message) {
-		int awaiting = orderMapper.setAwaitingInventory(message.orderId());
-		if (awaiting != 0) {
-			messageSender.sendCreateOrderMessage(message);
-		}
 	}
 	
 	@Override
