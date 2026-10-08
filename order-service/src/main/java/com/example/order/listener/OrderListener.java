@@ -36,6 +36,7 @@ public class OrderListener {
 			break;
 		case RabbitConstants.PAYMENT_FAILED:
 			handlePaymentFailed(message);
+			break;
 
 		default:
 			log.warn("Получено сообщение с неизвестным routing key: {}", routingKey);

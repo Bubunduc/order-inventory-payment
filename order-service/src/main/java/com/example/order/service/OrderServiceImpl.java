@@ -68,8 +68,10 @@ public class OrderServiceImpl implements OrderService {
 	
 	@Transactional
 	private void setAwaitingInventoryAndSend(OrderCreatedMessage message) {
-		messageSender.sendCreateOrderMessage(message);
-		orderMapper.setAwaitingInventory(message.orderId());
+		int awaiting = orderMapper.setAwaitingInventory(message.orderId());
+		if (awaiting != 0) {
+			messageSender.sendCreateOrderMessage(message);
+		}
 	}
 	
 	@Override

@@ -7,25 +7,27 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.example.inventory.constants.RabbitConstants;
+
 @Configuration
 public class RabbitConfig {
 	@Bean
 	public TopicExchange sagaExchange() {
-		return new TopicExchange("saga.exchange");
+		return new TopicExchange(RabbitConstants.SAGA_EXCHANGE);
 	}
 
 	@Bean
 	public Queue inventoryQueue() {
-		return new Queue("inventory.queue", true);
+		return new Queue(RabbitConstants.INVENTORY_QUEUE, true);
 	}
 
 	@Bean
 	public Binding inventoryOrderCreatedBinding(Queue inventoryQueue, TopicExchange sagaExchange) {
-		return BindingBuilder.bind(inventoryQueue).to(sagaExchange).with("order.created");
+		return BindingBuilder.bind(inventoryQueue).to(sagaExchange).with(RabbitConstants.ORDER_CREATED);
 	}
 
 	@Bean
 	public Binding inventoryReleaseBinding(Queue inventoryQueue, TopicExchange sagaExchange) {
-		return BindingBuilder.bind(inventoryQueue).to(sagaExchange).with("inventory.release");
+		return BindingBuilder.bind(inventoryQueue).to(sagaExchange).with(RabbitConstants.INVENTORY_RELEASE);
 	}
 }
