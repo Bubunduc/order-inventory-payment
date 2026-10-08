@@ -16,35 +16,35 @@ import tools.jackson.databind.ObjectMapper;
 @Component
 @RequiredArgsConstructor
 public class MessageSenderImpl implements MessageSender {
-	
+
 	private final RabbitTemplate rabbitTemplate;
 	private final ObjectMapper objectMapper;
-		
+
 	@Override
 	public void sendPaymentCompletedMessage(Long orderId) {
 		PaymentCompletedMessage message = new PaymentCompletedMessage(orderId);
-		sendAsJson(RabbitConstants.SAGA_EXCHANGE,RabbitConstants.PAYMENT_COMPLETED,message);
-		
+		sendAsJson(RabbitConstants.SAGA_EXCHANGE, RabbitConstants.PAYMENT_COMPLETED, message);
+
 	}
 
 	@Override
 	public void sendPaymentFailedMessage(Long orderId, String reason) {
 		PaymentFailedMessage message = new PaymentFailedMessage(orderId, reason);
-		sendAsJson(RabbitConstants.SAGA_EXCHANGE,RabbitConstants.PAYMENT_FAILED,message);
-		
-	}
-	private void sendAsJson(String exchange, String routingKey, Object payload) {
-		try {
-			byte[] body = objectMapper.writeValueAsBytes(payload);
-			Message message = MessageBuilder.
-					withBody(body).
-					setContentType(MessageProperties.CONTENT_TYPE_JSON)
-					.build();
-			rabbitTemplate.send(exchange, routingKey, message);
+		sendAsJson(RabbitConstants.SAGA_EXCHANGE, RabbitConstants.PAYMENT_FAILED, message);
 
+	}
+
+	private void sendAsJson(String exchange, String routingKey, Object payload) {
+		byte[] body;
+		
+		try {
+			body = objectMapper.writeValueAsBytes(payload);
 		} catch (Exception e) {
-			throw new RuntimeException("Не удалось сериализовать и отправить сообщение в RabbitMQ", e);
+			throw new RuntimeException("Не удалось сериализовать сообщение", e);
 		}
+		
+		Message message = MessageBuilder.withBody(body).setContentType(MessageProperties.CONTENT_TYPE_JSON).build();
+		rabbitTemplate.send(exchange, routingKey, message);
 	}
 
 }

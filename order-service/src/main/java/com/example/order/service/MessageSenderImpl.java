@@ -24,30 +24,30 @@ public class MessageSenderImpl implements MessageSender {
 	public void sendCreateOrderMessage(OrderCreatedMessage message) {
 		sendAsJson(RabbitConstants.SAGA_EXCHANGE, RabbitConstants.ORDER_CREATED, message);
 	}
-	
+
 	@Override
 	public void sendRefundMessage(Long orderId) {
 		PaymentRefundMessage message = new PaymentRefundMessage(orderId);
 		sendAsJson(RabbitConstants.SAGA_EXCHANGE, RabbitConstants.PAYMENT_REFUND, message);
 	}
+
 	@Override
 	public void sengReleaseMessage(Long orderId) {
 		InventoryReleaseMessage message = new InventoryReleaseMessage(orderId);
 		sendAsJson(RabbitConstants.SAGA_EXCHANGE, RabbitConstants.INVENTORY_RELEASE, message);
 	}
-	
-	private void sendAsJson(String exchange, String routingKey, Object payload) {
-		try {
-			byte[] body = objectMapper.writeValueAsBytes(payload);
-			Message message = MessageBuilder.
-					withBody(body).
-					setContentType(MessageProperties.CONTENT_TYPE_JSON).
-					build();
-			rabbitTemplate.send(exchange, routingKey, message);
 
+	private void sendAsJson(String exchange, String routingKey, Object payload) {
+		byte[] body;
+
+		try {
+			body = objectMapper.writeValueAsBytes(payload);
 		} catch (Exception e) {
-			throw new RuntimeException("Не удалось сериализовать и отправить сообщение в RabbitMQ", e);
+			throw new RuntimeException("Не удалось сериализовать сообщение", e);
 		}
+
+		Message message = MessageBuilder.withBody(body).setContentType(MessageProperties.CONTENT_TYPE_JSON).build();
+		rabbitTemplate.send(exchange, routingKey, message);
 	}
 
 }

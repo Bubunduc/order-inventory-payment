@@ -21,7 +21,7 @@ public class MessageSenderImpl implements MessageSender {
 
 	private final RabbitTemplate rabbitTemplate;
 	private final ObjectMapper objectMapper;
-	
+
 	@Override
 	public void sendReserveMessage(Long orderId, BigDecimal amount) {
 		InventoryReserveMessage message = new InventoryReserveMessage(orderId, amount);
@@ -35,16 +35,15 @@ public class MessageSenderImpl implements MessageSender {
 	}
 
 	private void sendAsJson(String exchange, String routingKey, Object payload) {
-		try {
-			byte[] body = objectMapper.writeValueAsBytes(payload);
-			Message message = MessageBuilder.
-					withBody(body).
-					setContentType(MessageProperties.CONTENT_TYPE_JSON)
-					.build();
-			rabbitTemplate.send(exchange, routingKey, message);
+		byte[] body;
 
+		try {
+			body = objectMapper.writeValueAsBytes(payload);
 		} catch (Exception e) {
-			throw new RuntimeException("Не удалось сериализовать и отправить сообщение в RabbitMQ", e);
+			throw new RuntimeException("Не удалось сериализовать сообщение", e);
 		}
+
+		Message message = MessageBuilder.withBody(body).setContentType(MessageProperties.CONTENT_TYPE_JSON).build();
+		rabbitTemplate.send(exchange, routingKey, message);
 	}
 }
