@@ -11,7 +11,7 @@ public interface OrderMapper {
 
 	Order findById(@Param("orderId") Long orderId);
 
-	int setAwaitingInventory(@Param("orderId") Long orderId);
+	void setAwaitingInventory(@Param("orderId") Long orderId);
 
 	int setAwaitingPayment(@Param("orderId") Long orderId);
 
