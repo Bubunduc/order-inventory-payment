@@ -33,14 +33,18 @@ public class OrderServiceImpl implements OrderService {
 
 	private final OrderItemMapper orderItemMapper;
 
+	private final OrderTransactionService orderTransactionService;
+
 	@Override
 	public void createOrder(CreateOrderRequest request) {
-		OrderCreatedMessage message = insertOrder(request);
+
+		OrderCreatedMessage message = orderTransactionService.createOrder(request);
+
 		messageSender.sendCreateOrderMessage(message);
-		
 	}
+
 	@Transactional
-	private OrderCreatedMessage insertOrder(CreateOrderRequest request)  {
+	private OrderCreatedMessage insertOrder(CreateOrderRequest request) {
 		List<String> skus = request.items().stream().map(OrderItemRequest::sku).toList();
 
 		Set<String> uniqueSkus = new HashSet<>(skus);
@@ -54,17 +58,15 @@ public class OrderServiceImpl implements OrderService {
 		orderMapper.insert(newOrder);
 		Long orderId = newOrder.getId();
 		orderItemMapper.insertAll(orderId, OrderItemRequest.toEntityList(request.items()));
-		List<OrderCreatedMessageItem> messageItems = request.
-				items().
-				stream().
-				map(item -> new OrderCreatedMessageItem(item.sku(), item.qty())).toList();
+		List<OrderCreatedMessageItem> messageItems = request.items().stream()
+				.map(item -> new OrderCreatedMessageItem(item.sku(), item.qty())).toList();
 
 		OrderCreatedMessage message = new OrderCreatedMessage(orderId, messageItems, request.amount());
 		orderMapper.setAwaitingInventory(message.orderId());
 		return message;
-		
+
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public GetOrderResponse getOrderById(Long id) {
