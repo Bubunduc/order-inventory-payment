@@ -22,7 +22,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	private final PaymentMapper paymentMapper;
 	
-	@Value("{payment.limit}")
+	@Value("${payment.limit}")
 	private BigDecimal paymentLimit;
 	
 	@Override
