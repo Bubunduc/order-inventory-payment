@@ -6,10 +6,10 @@ import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
-import com.example.order.dto.CreateOrderRequest;
-import com.example.order.dto.InventoryReleaseMessage;
-import com.example.order.dto.OrderCreatedMessage;
-import com.example.order.dto.PaymentRefundMessage;
+import com.example.order.dto.inventory.InventoryReleaseMessage;
+import com.example.order.dto.order.OrderCreatedMessage;
+import com.example.order.dto.payment.PaymentRefundMessage;
+import com.example.order.dto.request.CreateOrderRequest;
 
 import lombok.RequiredArgsConstructor;
 import tools.jackson.databind.ObjectMapper;

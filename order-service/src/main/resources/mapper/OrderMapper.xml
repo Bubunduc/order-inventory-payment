@@ -19,22 +19,39 @@
 
 	</insert>
 
-	<update id="updateStatus">
-
-		UPDATE orders
-		SET status = #{status},
-		updated_at =
-		CURRENT_TIMESTAMP
-		WHERE id = #{id}
-
+	<update id="setAwaitingInventory">
+		UPDATE order_db.orders
+		SET status = 'AWAITING_INVENTORY',
+		updated_at = CURRENT_TIMESTAMP
+		WHERE id = #{orderId}
+		AND status = 'CREATED'
 	</update>
 
-	<update id="setAwaitingPaymentStatus">
-		UPDATE orders
+	<update id="setAwaitingPayment">
+		UPDATE order_db.orders
 		SET status = 'AWAITING_PAYMENT',
 		updated_at = CURRENT_TIMESTAMP
-		WHERE id = #{id}
+		WHERE id = #{orderId}
 		AND status = 'AWAITING_INVENTORY'
+	</update>
+
+	<update id="confirmOrder">
+		UPDATE order_db.orders
+		SET status = 'CONFIRMED',
+		updated_at = CURRENT_TIMESTAMP
+		WHERE id = #{orderId}
+		AND status = 'AWAITING_PAYMENT'
+	</update>
+
+	<update id="cancelOrder">
+		UPDATE order_db.orders
+		SET status = 'CANCELLED',
+		updated_at = CURRENT_TIMESTAMP
+		WHERE id = #{orderId}
+		AND status IN (
+		'AWAITING_INVENTORY',
+		'AWAITING_PAYMENT'
+		)
 	</update>
 
 	<resultMap id="OrderResultMap"

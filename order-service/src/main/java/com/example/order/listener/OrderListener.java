@@ -4,10 +4,9 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
-import com.example.order.dto.InventoryRejectMessage;
-import com.example.order.dto.PaymentCompletedMessage;
-import com.example.order.dto.PaymentFailedMessage;
-import com.example.order.service.MessageSender;
+import com.example.order.dto.inventory.InventoryRejectMessage;
+import com.example.order.dto.payment.PaymentCompletedMessage;
+import com.example.order.dto.payment.PaymentFailedMessage;
 import com.example.order.service.OrderService;
 
 import lombok.RequiredArgsConstructor;
@@ -18,8 +17,6 @@ import tools.jackson.databind.ObjectMapper;
 @Component
 @RequiredArgsConstructor
 public class OrderListener {
-	
-	private final MessageSender messageSender;
 	private final OrderService orderService;
 	private final ObjectMapper objectMapper;
 	

@@ -7,9 +7,9 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.order.dto.CreateOrderRequest;
-import com.example.order.dto.GetOrderResponse;
-import com.example.order.dto.OrderItemRequest;
+import com.example.order.dto.order.GetOrderResponse;
+import com.example.order.dto.request.CreateOrderRequest;
+import com.example.order.dto.request.OrderItemRequest;
 import com.example.order.enums.OrderStatus;
 import com.example.order.exception.DuplicateSkuException;
 import com.example.order.exception.OrderNotFoundException;
@@ -18,7 +18,9 @@ import com.example.order.mapper.OrderMapper;
 import com.example.order.model.Order;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -46,7 +48,7 @@ public class OrderServiceImpl implements OrderService {
 		Long orderId = newOrder.getId();
 		orderItemMapper.insertAll(orderId, OrderItemRequest.toEntityList(request.items()));
 		messageSender.sendCreateOrderMessage(orderId, request);
-		orderMapper.updateStatus(orderId, OrderStatus.AWAITING_INVENTORY);
+		orderMapper.setAwaitingInventory(orderId);
 	}
 
 	@Override
@@ -61,27 +63,38 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public void setAwaitingPaymentStatus(Long id) {
-		orderMapper.setAwaitingPaymentStatus(id);
+		int awaiting = orderMapper.setAwaitingPayment(id);
+		checkStatus(awaiting, id);
 		
 	}
 
 	@Override
 	public void startCompensation(Long id) {
-		orderMapper.updateStatus(id, OrderStatus.CANCELLED);
-		messageSender.sengReleaseMessage(id);
-		messageSender.sendRefundMessage(id);
+		int orderCaneled = orderMapper.cancelOrder(id);
+		if (checkStatus(orderCaneled, id)) {
+			messageSender.sengReleaseMessage(id);
+			messageSender.sendRefundMessage(id);
+		}
 	}
 
 	@Override
 	public void cancelRejectedOrder(Long id) {
-		orderMapper.updateStatus(id, OrderStatus.CANCELLED);
-		
+		int orderCaneled =orderMapper.cancelOrder(id);
+		checkStatus(orderCaneled, id);
 	}
 
 	@Override
 	public void completeOrder(Long id) {
-		orderMapper.updateStatus(id, OrderStatus.CONFIRMED);
-		
+		int confirmed = orderMapper.confirmOrder(id);
+		checkStatus(confirmed, id);
+	}
+	
+	private boolean checkStatus(int queryResult,Long id) {
+		if(queryResult == 0) {
+			log.info("Заказ с id {} имеет не соответствующий действию статус", id);
+			return false;
+		}
+		return true;
 	}
 
 }

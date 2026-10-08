@@ -2,16 +2,20 @@ package com.example.order.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import com.example.order.enums.OrderStatus;
+
 import com.example.order.model.Order;
 
 @Mapper
 public interface OrderMapper {
 	void insert(Order order);
 
-	void updateStatus(@Param("id") Long id, @Param("status") OrderStatus status);
-	
-	Order findById(@Param("id") Long id);
-	
-	void setAwaitingPaymentStatus(@Param("id") Long id);
+	Order findById(@Param("orderId") Long orderId);
+
+	int setAwaitingInventory(@Param("orderId") Long orderId);
+
+	int setAwaitingPayment(@Param("orderId") Long orderId);
+
+	int confirmOrder(@Param("orderId") Long orderId);
+
+	int cancelOrder(@Param("orderId") Long orderId);
 }

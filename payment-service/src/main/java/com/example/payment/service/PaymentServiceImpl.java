@@ -33,17 +33,31 @@ public class PaymentServiceImpl implements PaymentService{
 			return false;
 		}
 		if (amount.compareTo(LIMIT) > 0) {
-			paymentMapper.updateStatus(orderId, PaymentStatus.FAILED);
-			throw new PaymentFailedException("Оплата отклонена для заказа " + orderId);
-		} 
-		paymentMapper.updateStatus(orderId, PaymentStatus.COMPLETED);
+			int failed = paymentMapper.failPayment(orderId);
+			if (failed != 0) {
+				throw new PaymentFailedException("Оплата отклонена для заказа " + orderId);
+			}
+			else {
+				log.info("Заказ с order_id {} имеет не соответствующий действию статус", orderId);
+				return false;
+			}
+			
+		}
+		int paid = paymentMapper.completePayment(orderId);
+		if (paid == 0) {
+			log.info("Заказ с order_id {} имеет не соответствующий действию статус", orderId);
+			return false;
+		}
 		return true;
 	}
 
 	@Override
 	@Transactional
 	public void refund(PaymentRefundMessage message) {
-		paymentMapper.updateStatus(message.orderId(), PaymentStatus.REFUNDED);
+		int refunded = paymentMapper.refund(message.orderId());
+		if (refunded == 0) {
+			log.info("Refund для заказа {} не выполнен, так как статус не FAILED",message.orderId());
+		} 
 		
 	}
 

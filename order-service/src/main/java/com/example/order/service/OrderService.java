@@ -1,7 +1,7 @@
 package com.example.order.service;
 
-import com.example.order.dto.CreateOrderRequest;
-import com.example.order.dto.GetOrderResponse;
+import com.example.order.dto.order.GetOrderResponse;
+import com.example.order.dto.request.CreateOrderRequest;
 
 public interface OrderService {
 
