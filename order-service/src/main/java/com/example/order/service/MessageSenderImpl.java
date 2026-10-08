@@ -10,7 +10,6 @@ import com.example.order.constants.RabbitConstants;
 import com.example.order.dto.inventory.InventoryReleaseMessage;
 import com.example.order.dto.order.OrderCreatedMessage;
 import com.example.order.dto.payment.PaymentRefundMessage;
-import com.example.order.dto.request.CreateOrderRequest;
 
 import lombok.RequiredArgsConstructor;
 import tools.jackson.databind.ObjectMapper;
@@ -22,8 +21,7 @@ public class MessageSenderImpl implements MessageSender {
 	private final ObjectMapper objectMapper;
 
 	@Override
-	public void sendCreateOrderMessage(Long orderId, CreateOrderRequest request) {
-		OrderCreatedMessage message = new OrderCreatedMessage(orderId, request.items(), request.amount());
+	public void sendCreateOrderMessage(OrderCreatedMessage message) {
 		sendAsJson(RabbitConstants.SAGA_EXCHANGE, RabbitConstants.ORDER_CREATED, message);
 	}
 	

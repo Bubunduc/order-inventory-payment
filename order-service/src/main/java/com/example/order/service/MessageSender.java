@@ -1,9 +1,9 @@
 package com.example.order.service;
 
-import com.example.order.dto.request.CreateOrderRequest;
+import com.example.order.dto.order.OrderCreatedMessage;
 
 public interface MessageSender {
-	void sendCreateOrderMessage(Long orderId, CreateOrderRequest request);
+	void sendCreateOrderMessage(OrderCreatedMessage message);
 
 	void sendRefundMessage(Long orderId);
 

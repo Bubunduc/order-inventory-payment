@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.order.dto.order.GetOrderResponse;
+import com.example.order.dto.order.OrderCreatedMessage;
+import com.example.order.dto.order.OrderCreatedMessageItem;
 import com.example.order.dto.request.CreateOrderRequest;
 import com.example.order.dto.request.OrderItemRequest;
 import com.example.order.enums.OrderStatus;
@@ -47,7 +49,14 @@ public class OrderServiceImpl implements OrderService {
 		orderMapper.insert(newOrder);
 		Long orderId = newOrder.getId();
 		orderItemMapper.insertAll(orderId, OrderItemRequest.toEntityList(request.items()));
-		messageSender.sendCreateOrderMessage(orderId, request);
+		List<OrderCreatedMessageItem> messageItems = request.
+				items().
+				stream().
+				map(item -> new OrderCreatedMessageItem(item.sku(), item.qty())).toList();
+
+		OrderCreatedMessage message = new OrderCreatedMessage(orderId, messageItems, request.amount());
+		
+		messageSender.sendCreateOrderMessage(message);
 		orderMapper.setAwaitingInventory(orderId);
 	}
 
@@ -65,7 +74,7 @@ public class OrderServiceImpl implements OrderService {
 	public void setAwaitingPaymentStatus(Long id) {
 		int awaiting = orderMapper.setAwaitingPayment(id);
 		checkStatus(awaiting, id);
-		
+
 	}
 
 	@Override
@@ -79,7 +88,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public void cancelRejectedOrder(Long id) {
-		int orderCaneled =orderMapper.cancelOrder(id);
+		int orderCaneled = orderMapper.cancelOrder(id);
 		checkStatus(orderCaneled, id);
 	}
 
@@ -88,9 +97,9 @@ public class OrderServiceImpl implements OrderService {
 		int confirmed = orderMapper.confirmOrder(id);
 		checkStatus(confirmed, id);
 	}
-	
-	private boolean checkStatus(int queryResult,Long id) {
-		if(queryResult == 0) {
+
+	private boolean checkStatus(int queryResult, Long id) {
+		if (queryResult == 0) {
 			log.info("Заказ с id {} имеет не соответствующий действию статус", id);
 			return false;
 		}
