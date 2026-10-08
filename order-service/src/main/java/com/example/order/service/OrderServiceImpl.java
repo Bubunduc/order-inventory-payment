@@ -36,6 +36,12 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	@Transactional
 	public void createOrder(CreateOrderRequest request) {
+		OrderCreatedMessage message = insertOrder(request);
+		setAwaitingInventoryAndSend(message);
+		
+	}
+	@Transactional
+	private OrderCreatedMessage insertOrder(CreateOrderRequest request)  {
 		List<String> skus = request.items().stream().map(OrderItemRequest::sku).toList();
 
 		Set<String> uniqueSkus = new HashSet<>(skus);
@@ -56,10 +62,16 @@ public class OrderServiceImpl implements OrderService {
 
 		OrderCreatedMessage message = new OrderCreatedMessage(orderId, messageItems, request.amount());
 		
-		messageSender.sendCreateOrderMessage(message);
-		orderMapper.setAwaitingInventory(orderId);
+		return message;
+		
 	}
-
+	
+	@Transactional
+	private void setAwaitingInventoryAndSend(OrderCreatedMessage message) {
+		messageSender.sendCreateOrderMessage(message);
+		orderMapper.setAwaitingInventory(message.orderId());
+	}
+	
 	@Override
 	@Transactional(readOnly = true)
 	public GetOrderResponse getOrderById(Long id) {
