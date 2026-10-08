@@ -45,7 +45,7 @@ public class OrderServiceImpl implements OrderService {
 		orderMapper.insert(newOrder);
 		Long orderId = newOrder.getId();
 		orderItemMapper.insertAll(orderId, OrderItemRequest.toEntityList(request.items()));
-		messageSender.sendMessage(orderId, request);
+		messageSender.sendCreateOrderMessage(orderId, request);
 		orderMapper.updateStatus(orderId, OrderStatus.AWAITING_INVENTORY);
 	}
 
@@ -64,6 +64,27 @@ public class OrderServiceImpl implements OrderService {
 		orderMapper.setAwaitingPaymentStatus(id);
 		
 	}
+
+	@Override
+	public void startCompensation(Long id) {
+		orderMapper.updateStatus(id, OrderStatus.CANCELLED);
+		messageSender.sengReleaseMessage(id);
+		messageSender.sendRefundMessage(id);
+	}
+
+	@Override
+	public void cancelRejectedOrder(Long id) {
+		orderMapper.updateStatus(id, OrderStatus.CANCELLED);
+		
+	}
+
+	@Override
+	public void completeOrder(Long id) {
+		orderMapper.updateStatus(id, OrderStatus.CONFIRMED);
+		
+	}
+	
+	
 	
 	
 

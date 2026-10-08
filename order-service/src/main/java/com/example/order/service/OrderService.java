@@ -10,4 +10,11 @@ public interface OrderService {
 	GetOrderResponse getOrderById(Long id);
 	
 	void setAwaitingPaymentStatus(Long id);
+	
+	void startCompensation(Long id);
+	
+	void cancelRejectedOrder(Long id);
+	
+	void completeOrder(Long id);
+	
 }
