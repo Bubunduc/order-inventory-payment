@@ -6,6 +6,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionException;
 
+import com.example.payment.constants.RabbitConstants;
 import com.example.payment.dto.InventoryReserveMessage;
 import com.example.payment.dto.PaymentRefundMessage;
 import com.example.payment.exception.PaymentFailedException;
@@ -25,17 +26,17 @@ public class PaymentListener {
 	private final PaymentService paymentService;
 	private final MessageSender messageSender;
 	
-	@RabbitListener(queues = "payment.queue")
+	@RabbitListener(queues = RabbitConstants.PAYMENT_QUEUE)
 	public void listen(Message message) {
 		String routingKey = message.getMessageProperties().getReceivedRoutingKey();
 
 		switch (routingKey) {
 
-		case "inventory.reserved":
+		case RabbitConstants.INVENTORY_RESERVED:
 			handleInventoryReserved(message);
 			break;
 
-		case "payment.refund":
+		case RabbitConstants.PAYMENT_REFUND:
 			handlePaymentRefund(message);
 			break;
 

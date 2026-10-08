@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionException;
 
 import com.example.inventory.client.OrderClient;
+import com.example.inventory.constants.RabbitConstants;
 import com.example.inventory.dto.InventoryReleaseMessage;
 import com.example.inventory.dto.OrderCreatedMessage;
 import com.example.inventory.exception.InventoryRejectException;
@@ -27,17 +28,17 @@ public class InventoryListener {
 	private final ObjectMapper objectMapper;
 	private final OrderClient orderClient;
 
-	@RabbitListener(queues = "inventory.queue")
+	@RabbitListener(queues = RabbitConstants.INVENTORY_QUEUE)
 	public void listen(Message message) {
 		String routingKey = message.getMessageProperties().getReceivedRoutingKey();
 
 		switch (routingKey) {
 
-		case "order.created":
+		case RabbitConstants.ORDER_CREATED:
 			handleOrderCreated(message);
 			break;
 
-		case "inventory.release":
+		case RabbitConstants.INVENTORY_RELEASE:
 			handleInventoryRelease(message);
 			break;
 

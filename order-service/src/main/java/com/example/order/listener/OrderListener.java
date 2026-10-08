@@ -4,6 +4,7 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
+import com.example.order.constants.RabbitConstants;
 import com.example.order.dto.inventory.InventoryRejectMessage;
 import com.example.order.dto.payment.PaymentCompletedMessage;
 import com.example.order.dto.payment.PaymentFailedMessage;
@@ -20,20 +21,20 @@ public class OrderListener {
 	private final OrderService orderService;
 	private final ObjectMapper objectMapper;
 	
-	@RabbitListener(queues = "order.queue")
+	@RabbitListener(queues = RabbitConstants.ORDER_QUEUE)
 	public void listen(Message message) {
 		String routingKey = message.getMessageProperties().getReceivedRoutingKey();
 
 		switch (routingKey) {
 
-		case "inventory.rejected":
+		case RabbitConstants.INVENTORY_REJECTED:
 			handleInventoryRejected(message);
 			break;
 
-		case "payment.completed":
+		case RabbitConstants.PAYMENT_COMPLETED:
 			handlePaymentCompleted(message);
 			break;
-		case "payment.failed":
+		case RabbitConstants.PAYMENT_FAILED:
 			handlePaymentFailed(message);
 
 		default:
