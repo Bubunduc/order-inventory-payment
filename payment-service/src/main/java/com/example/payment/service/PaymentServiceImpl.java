@@ -2,6 +2,7 @@ package com.example.payment.service;
 
 import java.math.BigDecimal;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 public class PaymentServiceImpl implements PaymentService {
 
 	private final PaymentMapper paymentMapper;
-	private static final BigDecimal LIMIT = new BigDecimal("1000.0"); //Если выше, то зазказ не принят
+	
+	@Value("{payment.limit}")
+	private BigDecimal paymentLimit;
 	
 	@Override
 	@Transactional
@@ -36,7 +39,7 @@ public class PaymentServiceImpl implements PaymentService {
 			log.info("Заказ с order_id {} уже был обработан", orderId);
 			return false;
 		}
-		if (amount.compareTo(LIMIT) > 0) {
+		if (amount.compareTo(paymentLimit) > 0) {
 			int failed = paymentMapper.failPayment(orderId);
 			if (failed != 0) {
 				throw new PaymentFailedException ("Оплата отклонена для заказа " + orderId);
