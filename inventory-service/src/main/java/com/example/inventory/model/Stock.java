@@ -17,7 +17,6 @@ public class Stock {
 	public String toString() {
 		return "Stock [sku=" + sku + ", availableQty=" + availableQty + ", reservedQty=" + reservedQty + "]";
 	}
-	
-	
+		
 }
 

@@ -1,7 +1,11 @@
 package com.example.order.service;
 
-import com.example.order.dto.CreateOrderRequest;
+import com.example.order.dto.order.OrderCreatedMessage;
 
 public interface MessageSender {
-	void sendMessage(Long orderId,CreateOrderRequest request);
+	void sendCreateOrderMessage(OrderCreatedMessage message);
+
+	void sendRefundMessage(Long orderId);
+
+	void sendReleaseMessage(Long orderId);
 }

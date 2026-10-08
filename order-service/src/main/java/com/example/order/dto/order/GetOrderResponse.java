@@ -1,9 +1,10 @@
-package com.example.order.dto;
+package com.example.order.dto.order;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.example.order.dto.request.OrderItemRequest;
 import com.example.order.enums.OrderStatus;
 import com.example.order.model.Order;
 

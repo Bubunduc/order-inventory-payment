@@ -1,48 +1,52 @@
-package com.example.payment.service;
+package com.example.order.service.impl;
 
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import com.example.payment.constants.RabbitConstants;
-import com.example.payment.dto.PaymentCompletedMessage;
-import com.example.payment.dto.PaymentFailedMessage;
+import com.example.order.constants.RabbitConstants;
+import com.example.order.dto.inventory.InventoryReleaseMessage;
+import com.example.order.dto.order.OrderCreatedMessage;
+import com.example.order.dto.payment.PaymentRefundMessage;
+import com.example.order.service.MessageSender;
 
 import lombok.RequiredArgsConstructor;
 import tools.jackson.databind.ObjectMapper;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class MessageSenderImpl implements MessageSender {
-
 	private final RabbitTemplate rabbitTemplate;
 	private final ObjectMapper objectMapper;
 
 	@Override
-	public void sendPaymentCompletedMessage(Long orderId) {
-		PaymentCompletedMessage message = new PaymentCompletedMessage(orderId);
-		sendAsJson(RabbitConstants.SAGA_EXCHANGE, RabbitConstants.PAYMENT_COMPLETED, message);
-
+	public void sendCreateOrderMessage(OrderCreatedMessage message) {
+		sendAsJson(RabbitConstants.SAGA_EXCHANGE, RabbitConstants.ORDER_CREATED, message);
 	}
 
 	@Override
-	public void sendPaymentFailedMessage(Long orderId, String reason) {
-		PaymentFailedMessage message = new PaymentFailedMessage(orderId, reason);
-		sendAsJson(RabbitConstants.SAGA_EXCHANGE, RabbitConstants.PAYMENT_FAILED, message);
+	public void sendRefundMessage(Long orderId) {
+		PaymentRefundMessage message = new PaymentRefundMessage(orderId);
+		sendAsJson(RabbitConstants.SAGA_EXCHANGE, RabbitConstants.PAYMENT_REFUND, message);
+	}
 
+	@Override
+	public void sendReleaseMessage(Long orderId) {
+		InventoryReleaseMessage message = new InventoryReleaseMessage(orderId);
+		sendAsJson(RabbitConstants.SAGA_EXCHANGE, RabbitConstants.INVENTORY_RELEASE, message);
 	}
 
 	private void sendAsJson(String exchange, String routingKey, Object payload) {
 		byte[] body;
-		
+
 		try {
 			body = objectMapper.writeValueAsBytes(payload);
 		} catch (Exception e) {
 			throw new RuntimeException("Не удалось сериализовать сообщение", e);
 		}
-		
+
 		Message message = MessageBuilder.withBody(body).setContentType(MessageProperties.CONTENT_TYPE_JSON).build();
 		rabbitTemplate.send(exchange, routingKey, message);
 	}

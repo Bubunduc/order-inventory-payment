@@ -10,10 +10,25 @@
 		ON CONFLICT (order_id)
 		DO NOTHING
 	</insert>
-	
-	<update id="updateStatus">
+
+	<update id="completePayment">
 		UPDATE payment_db.payments
-		SET status = #{status}
+		SET status = 'COMPLETED'
 		WHERE order_id = #{orderId}
+		AND status = 'PENDING'
+	</update>
+
+	<update id="failPayment">
+		UPDATE payment_db.payments
+		SET status = 'FAILED'
+		WHERE order_id = #{orderId}
+		AND status = 'PENDING'
+	</update>
+
+	<update id="refund">
+		UPDATE payment_db.payments
+		SET status = 'REFUNDED'
+		WHERE order_id = #{orderId}
+		AND status = 'FAILED'
 	</update>
 </mapper>

@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.order.dto.CreateOrderRequest;
-import com.example.order.dto.GetOrderResponse;
+import com.example.order.dto.order.GetOrderResponse;
+import com.example.order.dto.request.CreateOrderRequest;
 import com.example.order.service.OrderService;
 
 import jakarta.validation.Valid;
