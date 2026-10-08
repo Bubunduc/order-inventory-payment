@@ -1,5 +1,5 @@
 package com.example.order.dto.order;
 
-public record OrderCreatedMessageItem(String sku,Integer qty) {
+public record OrderCreatedMessageItem(String sku, Integer qty) {
 
 }

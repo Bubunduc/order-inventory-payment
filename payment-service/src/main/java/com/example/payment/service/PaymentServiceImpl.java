@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PaymentServiceImpl implements PaymentService{
+public class PaymentServiceImpl implements PaymentService {
 
 	private final PaymentMapper paymentMapper;
 	private static final BigDecimal LIMIT = new BigDecimal("1000.0"); //Если выше, то зазказ не принят
@@ -27,7 +27,11 @@ public class PaymentServiceImpl implements PaymentService{
 	public boolean pay(InventoryReserveMessage message) throws PaymentFailedException {
 		Long orderId = message.orderId();
 		BigDecimal amount = message.amount();
-		int inserted = paymentMapper.insertIfAbsent(orderId, amount,PaymentStatus.PENDING);
+		int inserted = paymentMapper.insertIfAbsent(
+				orderId,
+				amount,
+				PaymentStatus.PENDING
+			);
 		if (inserted == 0) {
 			log.info("Заказ с order_id {} уже был обработан", orderId);
 			return false;
@@ -35,7 +39,7 @@ public class PaymentServiceImpl implements PaymentService{
 		if (amount.compareTo(LIMIT) > 0) {
 			int failed = paymentMapper.failPayment(orderId);
 			if (failed != 0) {
-				throw new PaymentFailedException("Оплата отклонена для заказа " + orderId);
+				throw new PaymentFailedException ("Оплата отклонена для заказа " + orderId);
 			}
 			else {
 				log.info("Заказ с order_id {} имеет не соответствующий действию статус", orderId);

@@ -1,23 +1,17 @@
-package com.example.order.service;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+package com.example.order.service.impl;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.order.dto.order.GetOrderResponse;
 import com.example.order.dto.order.OrderCreatedMessage;
-import com.example.order.dto.order.OrderCreatedMessageItem;
 import com.example.order.dto.request.CreateOrderRequest;
-import com.example.order.dto.request.OrderItemRequest;
-import com.example.order.enums.OrderStatus;
-import com.example.order.exception.DuplicateSkuException;
 import com.example.order.exception.OrderNotFoundException;
-import com.example.order.mapper.OrderItemMapper;
 import com.example.order.mapper.OrderMapper;
 import com.example.order.model.Order;
+import com.example.order.service.MessageSender;
+import com.example.order.service.OrderService;
+import com.example.order.service.OrderTransactionService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +25,6 @@ public class OrderServiceImpl implements OrderService {
 
 	private final OrderMapper orderMapper;
 
-	private final OrderItemMapper orderItemMapper;
-
 	private final OrderTransactionService orderTransactionService;
 
 	@Override
@@ -41,30 +33,6 @@ public class OrderServiceImpl implements OrderService {
 		OrderCreatedMessage message = orderTransactionService.createOrder(request);
 
 		messageSender.sendCreateOrderMessage(message);
-	}
-
-	@Transactional
-	private OrderCreatedMessage insertOrder(CreateOrderRequest request) {
-		List<String> skus = request.items().stream().map(OrderItemRequest::sku).toList();
-
-		Set<String> uniqueSkus = new HashSet<>(skus);
-
-		if (skus.size() != uniqueSkus.size()) {
-			throw new DuplicateSkuException();
-		}
-		Order newOrder = new Order();
-		newOrder.setAmount(request.amount());
-		newOrder.setStatus(OrderStatus.CREATED);
-		orderMapper.insert(newOrder);
-		Long orderId = newOrder.getId();
-		orderItemMapper.insertAll(orderId, OrderItemRequest.toEntityList(request.items()));
-		List<OrderCreatedMessageItem> messageItems = request.items().stream()
-				.map(item -> new OrderCreatedMessageItem(item.sku(), item.qty())).toList();
-
-		OrderCreatedMessage message = new OrderCreatedMessage(orderId, messageItems, request.amount());
-		orderMapper.setAwaitingInventory(message.orderId());
-		return message;
-
 	}
 
 	@Override
@@ -86,9 +54,9 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public void startCompensation(Long id) {
-		int orderCaneled = orderMapper.cancelOrder(id);
-		if (checkStatus(orderCaneled, id)) {
-			messageSender.sengReleaseMessage(id);
+		int orderCanceled = orderMapper.cancelOrder(id);
+		if (checkStatus(orderCanceled, id)) {
+			messageSender.sendReleaseMessage(id);
 			messageSender.sendRefundMessage(id);
 		}
 	}

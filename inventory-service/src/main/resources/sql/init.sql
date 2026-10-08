@@ -37,3 +37,4 @@ VALUES
     ('MOUSE-001', 25, 0),
     ('KEYBOARD-001', 15, 0),
     ('HEADPHONES-001', 8, 0);
+ 

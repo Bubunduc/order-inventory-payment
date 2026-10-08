@@ -7,5 +7,5 @@ public interface MessageSender {
 
 	void sendRefundMessage(Long orderId);
 
-	void sengReleaseMessage(Long orderId);
+	void sendReleaseMessage(Long orderId);
 }

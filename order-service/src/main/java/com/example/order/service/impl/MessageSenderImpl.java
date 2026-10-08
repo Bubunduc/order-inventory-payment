@@ -1,4 +1,4 @@
-package com.example.order.service;
+package com.example.order.service.impl;
 
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
@@ -10,6 +10,7 @@ import com.example.order.constants.RabbitConstants;
 import com.example.order.dto.inventory.InventoryReleaseMessage;
 import com.example.order.dto.order.OrderCreatedMessage;
 import com.example.order.dto.payment.PaymentRefundMessage;
+import com.example.order.service.MessageSender;
 
 import lombok.RequiredArgsConstructor;
 import tools.jackson.databind.ObjectMapper;
@@ -32,7 +33,7 @@ public class MessageSenderImpl implements MessageSender {
 	}
 
 	@Override
-	public void sengReleaseMessage(Long orderId) {
+	public void sendReleaseMessage(Long orderId) {
 		InventoryReleaseMessage message = new InventoryReleaseMessage(orderId);
 		sendAsJson(RabbitConstants.SAGA_EXCHANGE, RabbitConstants.INVENTORY_RELEASE, message);
 	}

@@ -110,3 +110,4 @@ services:
 volumes:
   postgres-data:
   rabbitmq-data:
+  
