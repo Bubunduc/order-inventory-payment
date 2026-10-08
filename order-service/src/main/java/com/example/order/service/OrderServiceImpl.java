@@ -83,9 +83,5 @@ public class OrderServiceImpl implements OrderService {
 		orderMapper.updateStatus(id, OrderStatus.CONFIRMED);
 		
 	}
-	
-	
-	
-	
 
 }
